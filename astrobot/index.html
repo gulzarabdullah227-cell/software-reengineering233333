@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AstroBot • Space Explorer Chatbot</title>
+<link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div>
+
+<!-- START SCREEN -->
+<section id="welcome" class="screen welcome">
+  <div class="hero">
+    <div class="orb"><span>🪐</span><em>🚀</em></div>
+    <p class="eyebrow">Space Explorer Chatbot</p>
+    <h1>Meet <b>AstroBot</b></h1>
+    <p class="lead">Ask simple questions about planets, stars, the Moon and space missions. Get short, easy answers.</p>
+    <div class="actions">
+      <button id="startBtn" class="btn primary">Start Chat <span>🚀</span></button>
+      <button id="guideBtn" class="btn ghost">Instructions <span>📖</span></button>
+    </div>
+    <div class="feats">
+      <div><b>🌍</b><span>25+ space topics</span></div>
+      <div><b>💬</b><span>Simple answers</span></div>
+      <div><b>⚡</b><span>Instant replies</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAT SCREEN -->
+<section id="chatScreen" class="screen chatscreen" hidden>
+  <aside class="side">
+    <div class="brand"><span class="logo">🚀</span><div><h2>AstroBot</h2><p>Your space guide</p></div></div>
+    <h3>Try asking</h3>
+    <div id="suggestions" class="chips"></div>
+  </aside>
+  <main class="chat">
+    <header class="top">
+      <button id="homeBtn" class="icon" aria-label="Home">←</button>
+      <span class="dot"></span>
+      <div class="grow"><strong>AstroBot</strong><small>Online • Ask about space</small></div>
+      <button id="guideBtn2" class="icon" aria-label="Instructions">?</button>
+    </header>
+    <div id="messages" class="messages" aria-live="polite"></div>
+    <form id="form" class="composer" autocomplete="off">
+      <input id="input" placeholder="Type your question…" aria-label="Message">
+      <button type="submit" class="send" aria-label="Send">➤</button>
+    </form>
+  </main>
+</section>
+
+<!-- INSTRUCTIONS -->
+<div id="guide" class="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Instructions">
+    <button id="closeGuide" class="icon close" aria-label="Close">✕</button>
+    <h2>📖 About AstroBot</h2>
+    <p>AstroBot is a friendly chatbot that answers simple questions about <b>space</b>. Its answers come from a CSV file, so they are short and easy to read.</p>
+    <h3>How to use</h3>
+    <ol>
+      <li>Press <b>Start Chat</b>.</li>
+      <li>Type a question, or tap a <b>suggested question</b>.</li>
+      <li>Read the short answer and ask the next one!</li>
+    </ol>
+    <h3>Topics</h3>
+    <div class="tags"><span>☀️ Solar System</span><span>🌙 Moon</span><span>⭐ Stars</span><span>🛰️ Missions</span><span>✨ Fun Facts</span></div>
+    <h3>Tips</h3>
+    <ul>
+      <li>Keep questions short, like “Why is Mars red?”</li>
+      <li>Small spelling mistakes are okay.</li>
+      <li>If I don’t know, try a suggested question.</li>
+    </ul>
+    <button id="gotIt" class="btn primary">Got it</button>
+  </div>
+</div>
+<script src="static/script.js"></script>
+</body>
+</html>
