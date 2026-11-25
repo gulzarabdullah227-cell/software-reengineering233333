@@ -62,7 +62,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'astrobot/preview.html,AstroBot_preview.html', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'index.html,astrobot/preview.html,AstroBot_preview.html', allowEmptyArchive: true
         }
         success {
             echo "AstroBot CI/CD succeeded! Live app: http://localhost:${env.APP_PORT}"

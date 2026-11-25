@@ -177,13 +177,15 @@ function similarity(a, b) {
 }
 function localReply(msg) {
   msg = msg.toLowerCase().trim();
-  const scored = rows.map(r => [r.keywords.filter(k => new RegExp('\\b' + k + '\\b').test(msg)).length, r]);
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const scored = rows.map(r => [r.keywords.filter(k => new RegExp('\\b' + esc(k) + '\\b').test(msg)).length, r]);
   const best = scored.reduce((a, b) => (b[0] > a[0] ? b : a), [0, null]);
   if (best[0] > 0) return best[1].answer;
   const fuzzy = rows.map(r => [similarity(msg, r.question), r]).sort((a, b) => b[0] - a[0])[0];
   return fuzzy && fuzzy[0] >= 0.5 ? fuzzy[1].answer : FALLBACK;
 }
 async function getReply(msg) {
+  if (window.EMBEDDED) return localReply(msg);
   try {
     const res = await fetch('/api/chat', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({message: msg})});
     if (!res.ok) throw 0;
@@ -223,6 +225,7 @@ function showHome() { $('chatScreen').hidden = true; $('welcome').hidden = false
 const openGuide = () => { $('guide').hidden = false; $('gotIt').focus(); };
 const closeGuide = () => { $('guide').hidden = true; };
 async function init() {
+  if (window.EMBEDDED) { rows = window.EMBEDDED; buildSuggestions(); return; }
   try { const res = await fetch('/api/data'); if (!res.ok) throw 0; rows = await res.json(); }
   catch { rows = window.EMBEDDED || []; }
   buildSuggestions();

@@ -18,9 +18,9 @@ def build_preview():
     h = h.replace('<script src="static/script.js"></script>', js)
     out = B / "preview.html"
     out.write_text(h, encoding="utf-8")
-    root_preview = B.parent / "AstroBot_preview.html"
-    if root_preview.parent.exists():
-        root_preview.write_text(h, encoding="utf-8")
+    for target in (B.parent / "AstroBot_preview.html", B.parent / "index.html"):
+        if target.parent.exists():
+            target.write_text(h, encoding="utf-8")
     return out
 
 

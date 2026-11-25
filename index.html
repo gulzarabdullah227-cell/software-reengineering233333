@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AstroBot • Space Explorer Chatbot</title>
+<style>:root{--bg:#0a0618;--text:#f6f3ff;--muted:#b4a9d9;--line:rgba(255,255,255,.16);--glass:rgba(255,255,255,.07);--a:#ff6b9d;--b:#ffb347;--c:#7c6cff}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+/* fluid scale: phone ≈16px, laptop ≈18px, TV/4K grows up to 40px */
+html{font-size:clamp(16px,.5vw + 12px,40px);height:100%}
+body{height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--text);background:var(--bg);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+.bg{position:fixed;inset:0;overflow:hidden;z-index:-1}
+.bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;animation:float 14s ease-in-out infinite}
+.bg i:nth-child(1){width:45vmax;height:45vmax;background:var(--c);top:-15vmax;left:-10vmax}
+.bg i:nth-child(2){width:38vmax;height:38vmax;background:var(--a);bottom:-14vmax;right:-8vmax;animation-delay:-5s}
+.bg i:nth-child(3){width:26vmax;height:26vmax;background:#1fb6ff;top:35%;left:55%;opacity:.3;animation-delay:-9s}
+.screen{height:100dvh;width:100%}
+/* WELCOME */
+.welcome{display:grid;place-items:center;padding:1.5rem;overflow-y:auto}
+.hero{max-width:56rem;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+.orb{position:relative;width:11rem;height:11rem;border-radius:50%;display:grid;place-items:center;font-size:5.5rem;background:radial-gradient(circle at 30% 30%,#ffffff40,#ffffff08 60%);border:1px solid var(--line);box-shadow:0 0 80px #ff6b9d55,inset 0 0 40px #ffffff1a;animation:bob 5s ease-in-out infinite}
+.orb em{position:absolute;font-style:normal;font-size:2.4rem;top:-.4rem;right:-.2rem;animation:bob 3s ease-in-out infinite reverse}
+.eyebrow{color:var(--b);letter-spacing:.2em;text-transform:uppercase;font-size:.85rem;font-weight:600}
+h1{font-size:clamp(2.6rem,7vw,5.2rem);line-height:1.05}
+h1 b{background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:1.35rem;line-height:1.5;color:var(--muted);max-width:38rem}
+.actions{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-top:.8rem}
+.btn{display:inline-flex;align-items:center;gap:.6rem;font-size:1.25rem;font-weight:600;padding:1.05rem 2rem;border-radius:999px;border:1px solid var(--line);transition:.2s}
+.btn.primary{border:0;background:linear-gradient(90deg,var(--a),var(--b));color:#1a0b1f;box-shadow:0 14px 40px #ff6b9d55}
+.btn.ghost{background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.btn:hover,.btn:focus-visible{transform:translateY(-3px) scale(1.03);outline:none}
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;width:100%;margin-top:1.4rem}
+.feats div{background:var(--glass);border:1px solid var(--line);border-radius:1.3rem;padding:1.1rem .8rem;display:flex;flex-direction:column;gap:.4rem;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.feats b{font-size:2rem}.feats span{font-size:1.05rem;color:var(--muted)}
+/* CHAT */
+.chatscreen{display:grid;grid-template-columns:minmax(18rem,27rem) 1fr;gap:1.2rem;padding:1.2rem;max-width:140rem;margin:auto}
+.side,.chat{background:var(--glass);border:1px solid var(--line);border-radius:1.8rem;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 30px 80px #0006;min-height:0}
+.side{padding:1.6rem;overflow-y:auto}
+.brand{display:flex;gap:1rem;align-items:center;margin-bottom:1.6rem}
+.logo{width:3.6rem;height:3.6rem;display:grid;place-items:center;font-size:1.9rem;border-radius:1.1rem;background:linear-gradient(135deg,var(--a),var(--b))}
+.brand h2{font-size:1.6rem}.brand p{color:var(--muted)}
+.side h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.9rem}
+.chips{display:flex;flex-direction:column;gap:.7rem}
+.cat{font-size:.8rem;color:var(--b);text-transform:uppercase;letter-spacing:.1em;margin-top:.6rem}
+.chip{text-align:left;font-size:1.1rem;padding:.9rem 1.1rem;border-radius:1rem;background:rgba(255,255,255,.06);border:1px solid var(--line);transition:.2s}
+.chip:hover,.chip:focus-visible{transform:translateX(.3rem);border-color:var(--b);background:rgba(255,179,71,.14);outline:none}
+.chat{display:flex;flex-direction:column;overflow:hidden}
+.top{display:flex;align-items:center;gap:.9rem;padding:1.1rem 1.4rem;border-bottom:1px solid var(--line)}
+.grow{flex:1;min-width:0}.top strong{display:block;font-size:1.25rem}.top small{color:var(--muted);font-size:.95rem}
+.dot{width:.85rem;height:.85rem;border-radius:50%;background:#34d399;box-shadow:0 0 0 .35rem #34d39933}
+.icon{width:2.8rem;height:2.8rem;border-radius:50%;border:1px solid var(--line);background:var(--glass);font-size:1.2rem;flex:none;transition:.2s}
+.icon:hover{background:rgba(255,255,255,.18)}
+.messages{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;scroll-behavior:smooth}
+.msg{max-width:min(78%,50rem);padding:1.1rem 1.4rem;border-radius:1.5rem;font-size:1.3rem;line-height:1.55;animation:pop .3s ease;overflow-wrap:anywhere}
+.bot{align-self:flex-start;background:rgba(255,255,255,.1);border:1px solid var(--line);border-bottom-left-radius:.4rem}
+.user{align-self:flex-end;color:#1a0b1f;font-weight:600;background:linear-gradient(135deg,var(--a),var(--b));border-bottom-right-radius:.4rem}
+.typing{display:flex;gap:.45rem;padding:1.3rem 1.4rem}
+.typing i{width:.65rem;height:.65rem;border-radius:50%;background:var(--muted);animation:bounce 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+.composer{display:flex;gap:.8rem;padding:1rem 1.2rem;border-top:1px solid var(--line);padding-bottom:max(1rem,env(safe-area-inset-bottom))}
+.composer input{flex:1;min-width:0;font:inherit;font-size:1.25rem;color:var(--text);background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:1.2rem;padding:1rem 1.3rem;outline:none}
+.composer input:focus{border-color:var(--b);box-shadow:0 0 0 .25rem #ffb34733}
+.send{width:3.8rem;border:0;border-radius:1.2rem;font-size:1.4rem;color:#1a0b1f;background:linear-gradient(135deg,var(--a),var(--b))}
+/* MODAL */
+.modal{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:1rem;background:#05030fb3;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.sheet{position:relative;width:min(100%,46rem);max-height:92dvh;overflow-y:auto;background:#17102e;border:1px solid var(--line);border-radius:1.8rem;padding:2rem;display:flex;flex-direction:column;gap:.8rem;font-size:1.15rem;line-height:1.55;animation:pop .3s ease}
+.sheet h2{font-size:1.9rem;padding-right:3rem}.sheet h3{color:var(--b);font-size:1.1rem;margin-top:.5rem}
+.sheet p,.sheet li{color:#ded8f5}.sheet ol,.sheet ul{padding-left:1.4rem;display:grid;gap:.3rem}
+.close{position:absolute;top:1.2rem;right:1.2rem}
+.tags{display:flex;flex-wrap:wrap;gap:.5rem}.tags span{background:var(--glass);border:1px solid var(--line);border-radius:999px;padding:.4rem .9rem;font-size:1rem}
+.sheet .btn{align-self:flex-start;margin-top:.8rem}
+@keyframes pop{from{opacity:0;transform:translateY(.8rem)}}
+@keyframes bounce{50%{transform:translateY(-.4rem);opacity:.5}}
+@keyframes bob{50%{transform:translateY(-.8rem)}}
+@keyframes float{50%{transform:translate(4vmax,3vmax) scale(1.1)}}
+/* TABLET / PHONE */
+@media(max-width:60rem){
+ .chatscreen{grid-template-columns:1fr;grid-template-rows:auto 1fr;padding:.7rem;gap:.7rem}
+ .side{padding:.9rem 1rem;border-radius:1.4rem;overflow:visible}
+ .brand,.side h3,.cat{display:none}
+ .chips{flex-direction:row;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:none}
+ .chip{white-space:nowrap;font-size:1rem;padding:.7rem 1rem;border-radius:999px}
+ .chip:hover{transform:none}
+ .msg{max-width:92%;font-size:1.15rem}
+ .messages{padding:1rem}
+}
+@media(max-width:34rem){
+ .feats{grid-template-columns:1fr}.feats div{flex-direction:row;align-items:center;justify-content:center;gap:.8rem}
+ .btn{width:100%;justify-content:center}.actions{width:100%}
+ .orb{width:8.5rem;height:8.5rem;font-size:4rem}
+ .sheet{padding:1.4rem}
+}
+@media(max-height:34rem) and (orientation:landscape){.orb{display:none}.welcome{place-items:start center}}
+/* TV / 4K */
+@media(min-width:120rem){.hero{max-width:80rem}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div>
+
+<!-- START SCREEN -->
+<section id="welcome" class="screen welcome">
+  <div class="hero">
+    <div class="orb"><span>🪐</span><em>🚀</em></div>
+    <p class="eyebrow">Space Explorer Chatbot</p>
+    <h1>Meet <b>AstroBot</b></h1>
+    <p class="lead">Ask simple questions about planets, stars, the Moon and space missions. Get short, easy answers.</p>
+    <div class="actions">
+      <button id="startBtn" class="btn primary">Start Chat <span>🚀</span></button>
+      <button id="guideBtn" class="btn ghost">Instructions <span>📖</span></button>
+    </div>
+    <div class="feats">
+      <div><b>🌍</b><span>25+ space topics</span></div>
+      <div><b>💬</b><span>Simple answers</span></div>
+      <div><b>⚡</b><span>Instant replies</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAT SCREEN -->
+<section id="chatScreen" class="screen chatscreen" hidden>
+  <aside class="side">
+    <div class="brand"><span class="logo">🚀</span><div><h2>AstroBot</h2><p>Your space guide</p></div></div>
+    <h3>Try asking</h3>
+    <div id="suggestions" class="chips"></div>
+  </aside>
+  <main class="chat">
+    <header class="top">
+      <button id="homeBtn" class="icon" aria-label="Home">←</button>
+      <span class="dot"></span>
+      <div class="grow"><strong>AstroBot</strong><small>Online • Ask about space</small></div>
+      <button id="guideBtn2" class="icon" aria-label="Instructions">?</button>
+    </header>
+    <div id="messages" class="messages" aria-live="polite"></div>
+    <form id="form" class="composer" autocomplete="off">
+      <input id="input" placeholder="Type your question…" aria-label="Message">
+      <button type="submit" class="send" aria-label="Send">➤</button>
+    </form>
+  </main>
+</section>
+
+<!-- INSTRUCTIONS -->
+<div id="guide" class="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Instructions">
+    <button id="closeGuide" class="icon close" aria-label="Close">✕</button>
+    <h2>📖 About AstroBot</h2>
+    <p>AstroBot is a friendly chatbot that answers simple questions about <b>space</b>. Its answers come from a CSV file, so they are short and easy to read.</p>
+    <h3>How to use</h3>
+    <ol>
+      <li>Press <b>Start Chat</b>.</li>
+      <li>Type a question, or tap a <b>suggested question</b>.</li>
+      <li>Read the short answer and ask the next one!</li>
+    </ol>
+    <h3>Topics</h3>
+    <div class="tags"><span>☀️ Solar System</span><span>🌙 Moon</span><span>⭐ Stars</span><span>🛰️ Missions</span><span>✨ Fun Facts</span></div>
+    <h3>Tips</h3>
+    <ul>
+      <li>Keep questions short, like “Why is Mars red?”</li>
+      <li>Small spelling mistakes are okay.</li>
+      <li>If I don’t know, try a suggested question.</li>
+    </ul>
+    <button id="gotIt" class="btn primary">Got it</button>
+  </div>
+</div>
+<script>window.EMBEDDED=[{"category": "Basics", "question": "hello", "keywords": ["hi", "hello", "hey"], "answer": "Hello! 🚀 I am AstroBot. Ask me anything about space!"}, {"category": "Basics", "question": "what is your name", "keywords": ["name", "who are you"], "answer": "I am AstroBot 🤖 your friendly space guide."}, {"category": "Basics", "question": "how are you", "keywords": ["how are you"], "answer": "Doing great and ready to explore the universe! 🌌"}, {"category": "Solar System", "question": "what is the sun", "keywords": ["sun", "star"], "answer": "The Sun is a giant ball of hot gas. It gives us light and heat. ☀️"}, {"category": "Solar System", "question": "how many planets are there", "keywords": ["planets", "how many planet"], "answer": "There are 8 planets: Mercury Venus Earth Mars Jupiter Saturn Uranus and Neptune."}, {"category": "Solar System", "question": "which is the biggest planet", "keywords": ["biggest", "largest", "jupiter"], "answer": "Jupiter is the biggest planet. More than 1000 Earths could fit inside it! 🪐"}, {"category": "Solar System", "question": "which planet is the hottest", "keywords": ["hottest", "venus"], "answer": "Venus is the hottest planet. Its thick air traps heat like a blanket. 🔥"}, {"category": "Solar System", "question": "why is mars red", "keywords": ["mars", "red planet"], "answer": "Mars is red because its soil has lots of rust (iron oxide). 🔴"}, {"category": "Solar System", "question": "what are saturn's rings", "keywords": ["saturn", "rings"], "answer": "Saturn's rings are made of ice and rock pieces. Some are tiny and some are as big as houses. 💍"}, {"category": "Moon", "question": "what is the moon", "keywords": ["moon", "lunar"], "answer": "The Moon is Earth's only natural satellite. It circles Earth about every 27 days. 🌙"}, {"category": "Moon", "question": "who first walked on the moon", "keywords": ["neil", "armstrong", "first man", "walked on the moon"], "answer": "Neil Armstrong was the first person on the Moon in 1969. 👨‍🚀"}, {"category": "Moon", "question": "why does the moon change shape", "keywords": ["phases", "shape"], "answer": "The Moon does not change. We just see different lit parts as it moves around Earth."}, {"category": "Stars", "question": "what is a black hole", "keywords": ["black hole"], "answer": "A black hole is a place in space where gravity is so strong that even light cannot escape. 🕳️"}, {"category": "Stars", "question": "what is a galaxy", "keywords": ["galaxy", "milky way"], "answer": "A galaxy is a huge group of stars and planets. We live in the Milky Way. 🌌"}, {"category": "Stars", "question": "what is a light year", "keywords": ["light year", "lightyear"], "answer": "A light year is the distance light travels in one year. That is about 9.5 trillion km."}, {"category": "Stars", "question": "what is a shooting star", "keywords": ["shooting star", "meteor"], "answer": "A shooting star is a tiny space rock burning up in Earth's air. ✨"}, {"category": "Stars", "question": "what is a supernova", "keywords": ["supernova", "explode"], "answer": "A supernova is a giant star exploding at the end of its life. It shines super bright. 💥"}, {"category": "Missions", "question": "what is nasa", "keywords": ["nasa", "isro", "space agency"], "answer": "NASA is the US space agency. ISRO is India's space agency. They send rockets and probes to space. 🛰️"}, {"category": "Missions", "question": "what is the iss", "keywords": ["iss", "space station"], "answer": "The ISS is a big home in space where astronauts live and do science experiments. 🛸"}, {"category": "Missions", "question": "what is chandrayaan", "keywords": ["chandrayaan"], "answer": "Chandrayaan is India's Moon mission. Chandrayaan-3 landed near the Moon's south pole in 2023. 🇮🇳"}, {"category": "Missions", "question": "what do astronauts eat", "keywords": ["eat", "food", "astronaut food"], "answer": "Astronauts eat packed meals like dried fruit and rehydrated foods. Drinks come in pouches! 🍽️"}, {"category": "Fun Facts", "question": "how long is a day on earth", "keywords": ["day", "rotate", "rotation"], "answer": "One day on Earth is 24 hours. That is how long Earth takes to spin once. 🌍"}, {"category": "Fun Facts", "question": "is there sound in space", "keywords": ["sound", "noise", "silent"], "answer": "No. Space has no air so sound cannot travel. It is completely silent. 🔇"}, {"category": "Fun Facts", "question": "how hot is the sun", "keywords": ["temperature", "how hot"], "answer": "The Sun's surface is about 5500 °C. Its core is about 15 million °C!"}, {"category": "Fun Facts", "question": "can humans live on mars", "keywords": ["live on mars", "colonize", "colony"], "answer": "Not yet. Mars is cold and has no breathable air. Scientists are working on it! 🏜️"}];</script><script>const $ = id => document.getElementById(id);
+const box = $('messages'), input = $('input');
+const FALLBACK = "Hmm 🤔 I didn't catch that. Try one of the suggested questions!";
+var rows = [];
+
+// Local matcher (same idea as the Python code) - used when no server is running
+function similarity(a, b) {
+  const A = new Set(a.split(/\W+/)), B = new Set(b.split(/\W+/));
+  return [...A].filter(w => B.has(w)).length / Math.max(A.size, B.size);
+}
+function localReply(msg) {
+  msg = msg.toLowerCase().trim();
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const scored = rows.map(r => [r.keywords.filter(k => new RegExp('\\b' + esc(k) + '\\b').test(msg)).length, r]);
+  const best = scored.reduce((a, b) => (b[0] > a[0] ? b : a), [0, null]);
+  if (best[0] > 0) return best[1].answer;
+  const fuzzy = rows.map(r => [similarity(msg, r.question), r]).sort((a, b) => b[0] - a[0])[0];
+  return fuzzy && fuzzy[0] >= 0.5 ? fuzzy[1].answer : FALLBACK;
+}
+async function getReply(msg) {
+  if (window.EMBEDDED) return localReply(msg);
+  try {
+    const res = await fetch('/api/chat', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({message: msg})});
+    if (!res.ok) throw 0;
+    return (await res.json()).reply;
+  } catch { return localReply(msg); }
+}
+function add(text, who) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + who; d.textContent = text;
+  box.appendChild(d); box.scrollTop = box.scrollHeight; return d;
+}
+async function send(text) {
+  text = text.trim(); if (!text) return;
+  add(text, 'user'); input.value = '';
+  const t = document.createElement('div');
+  t.className = 'msg bot typing'; t.innerHTML = '<i></i><i></i><i></i>';
+  box.appendChild(t); box.scrollTop = box.scrollHeight;
+  const [reply] = await Promise.all([getReply(text), new Promise(r => setTimeout(r, 700))]);
+  t.remove(); add(reply, 'bot');
+}
+function buildSuggestions() {
+  const wrap = $('suggestions'); wrap.innerHTML = ''; let last = '';
+  rows.filter(r => r.category !== 'Basics').forEach(r => {
+    if (r.category !== last) { const c = document.createElement('div'); c.className = 'cat'; c.textContent = r.category; wrap.appendChild(c); last = r.category; }
+    const b = document.createElement('button'); b.className = 'chip'; b.textContent = r.question.charAt(0).toUpperCase() + r.question.slice(1) + '?';
+    b.onclick = () => send(r.question); wrap.appendChild(b);
+  });
+}
+// Screens
+let greeted = false;
+function showChat() {
+  $('welcome').hidden = true; $('chatScreen').hidden = false;
+  if (!greeted) { add("Hello! 🚀 I am AstroBot. Ask me anything about space, or tap a suggested question!", 'bot'); greeted = true; }
+  input.focus({preventScroll: true});
+}
+function showHome() { $('chatScreen').hidden = true; $('welcome').hidden = false; }
+const openGuide = () => { $('guide').hidden = false; $('gotIt').focus(); };
+const closeGuide = () => { $('guide').hidden = true; };
+async function init() {
+  if (window.EMBEDDED) { rows = window.EMBEDDED; buildSuggestions(); return; }
+  try { const res = await fetch('/api/data'); if (!res.ok) throw 0; rows = await res.json(); }
+  catch { rows = window.EMBEDDED || []; }
+  buildSuggestions();
+}
+$('startBtn').onclick = showChat;
+$('homeBtn').onclick = showHome;
+$('guideBtn').onclick = $('guideBtn2').onclick = openGuide;
+$('closeGuide').onclick = $('gotIt').onclick = closeGuide;
+$('guide').addEventListener('click', e => { if (e.target.id === 'guide') closeGuide(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGuide(); });
+$('form').addEventListener('submit', e => { e.preventDefault(); send(input.value); });
+init();
+</script>
+</body>
+</html>
